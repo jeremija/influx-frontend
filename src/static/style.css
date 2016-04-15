@@ -15,7 +15,7 @@ table th, table td {
   padding-right: 1rem;
 }
 
-table tr:nth-child(odd) {
+table tbody tr:nth-child(odd) {
   background-color: #272727;
 }
 
@@ -24,6 +24,7 @@ table td:nth-child(1) {
 }
 
 input, select {
+  box-sizing: border-box;
   background-color: #111;
   color: white;
   border: 1px solid #333;
