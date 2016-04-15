@@ -115,11 +115,15 @@ function Form() {
       <select onChange={e => formStore.set('unit', e.target.value)}>
         {unitOpts}
       </select>
-      <input
-        onChange={e => formStore.set('condition', e.target.value)}
-        type="text"
-      />
-      <input onClick={submit} type="submit" />
+
+      <div className="right">
+        <input
+          className="condition"
+          onChange={e => formStore.set('condition', e.target.value)}
+          type="text"
+        />
+        <input onClick={submit} type="submit" />
+      </div>
     </div>
   );
 }
