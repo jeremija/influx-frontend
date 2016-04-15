@@ -6,9 +6,16 @@ body {
 }
 
 table {
-  width: 100%;
+  max-width: 100%;
   border: none;
   border-collapse: collapse;
+}
+
+table th {
+  overflow: auto;
+  resize: horizontal;
+  text-align: left;
+  text-decoration: underline;
 }
 
 table th, table td {
@@ -54,3 +61,4 @@ input, select {
 .query .right .condition {
   flex: 2;
 }
+
