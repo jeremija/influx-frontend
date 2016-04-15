@@ -47,6 +47,7 @@ function Form() {
           className="condition"
           onChange={e => formStore.set('condition', e.target.value)}
           type="text"
+          value={formStore.get('condition')}
         />
         <input type="submit" value="Go" />
       </div>

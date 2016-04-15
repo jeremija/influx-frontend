@@ -12,7 +12,7 @@ function createStore() {
 
   function set(key, value) {
     vars[key] = value;
-    emitter.emit('change');
+    emitter.emit('change', key, value);
   }
 
   function get(key) {
@@ -27,7 +27,13 @@ function createStore() {
     emitter.removeListener('change', callback);
   }
 
-  return { set, get, addListener, removeListener };
+  function when(key, callback) {
+    emitter.on('change', (_key, value) => {
+      if (key === _key) callback(value);
+    });
+  }
+
+  return { set, get, when, addListener, removeListener };
 }
 
 module.exports = { createStore };
