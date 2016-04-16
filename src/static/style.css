@@ -5,35 +5,6 @@ body {
   font-size: 12px;
 }
 
-table {
-  max-width: 100%;
-  border: none;
-  border-collapse: collapse;
-}
-
-table th {
-  color: white;
-  overflow: auto;
-  resize: horizontal;
-  text-align: left;
-}
-
-table th, table td {
-  padding-right: 1rem;
-}
-
-table td {
-  padding: 0.5rem 0;
-}
-
-table tbody tr:nth-child(odd) {
-  background-color: #272727;
-}
-
-table td:nth-child(1) {
-  white-space: nowrap;
-}
-
 input, select {
   box-sizing: border-box;
   background-color: #111;
@@ -43,6 +14,11 @@ input, select {
   font-family: 'Ubuntu Mono', monospace;
   border-radius: 5px;
   margin: 0 0.25rem 0 0.25rem;
+}
+
+.query {
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
 }
 
 @media(min-width: 600px) {
@@ -66,17 +42,55 @@ input, select {
   flex: 2;
 }
 
-.clickable:hover {
-  color: white;
-  cursor: pointer;
+table {
+  max-width: 100%;
+  border: none;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
+table th {
+  color: white;
+  font-weight: normal;
+  overflow: auto;
+  resize: horizontal;
+  text-align: left;
+}
+
+table th select {
+  border: none;
+  background-color: #222;
+}
+
+table th, table td {
+  padding-right: 1rem;
+}
+
+table td {
+  padding: 0.5rem 0;
+  vertical-align: top;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #272727;
+}
+
+table td:nth-child(1) {
+  white-space: nowrap;
+}
+
+
 table td .clickable {
-  color: lime;
+  color: white;
   visibility: hidden;
 }
 
 table td:hover .clickable {
-  color: yellow;
   visibility: visible;
 }
+
+.clickable:hover {
+  color: #aaf;
+  cursor: pointer;
+}
+

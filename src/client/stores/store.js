@@ -12,28 +12,49 @@ function createStore() {
 
   function set(key, value) {
     vars[key] = value;
-    emitter.emit('change', key, value);
+    change();
+    return self;
+  }
+
+  function softSet(key, value) {
+    vars[key] = value;
+    return self;
+  }
+
+  function change() {
+    emitter.emit('change');
+    return self;
   }
 
   function get(key) {
     return vars[key];
   }
 
+  function getState() {
+    return vars;
+  }
+
   function addListener(callback) {
     emitter.on('change', callback);
+    return self;
   }
 
   function removeListener(callback) {
     emitter.removeListener('change', callback);
+    return self;
   }
 
   function when(key, callback) {
     emitter.on('change', (_key, value) => {
       if (key === _key) callback(value);
     });
+    return self;
   }
 
-  return { set, get, when, addListener, removeListener };
+  let self = {
+    set, get, getState, softSet, change, when, addListener, removeListener
+  };
+  return self;
 }
 
 module.exports = { createStore };

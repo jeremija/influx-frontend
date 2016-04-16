@@ -11,6 +11,10 @@ const tagsStore = require('../stores/tagsStore.js');
 
 let tagsCache = {};
 
+function handleError(error) {
+  resultsStore.set('error', error && error.message || 'An error has occurred');
+}
+
 function setDate(date) {
   formStore.set('datetime', date);
 }
@@ -26,13 +30,16 @@ function addCondition(key, comparator, value) {
 function loadMeasurements() {
   return http.get('influx/measurements')
   .then(measurements => {
-    formStore.set('measurements', measurements);
+    formStore.softSet('measurements', measurements);
 
     // replace selected measuremenet only if not set
     if (measurements.indexOf(formStore.get('measurement')) < 0) {
-      formStore.set('measurement', measurements[0]);
+      formStore.softSet('measurement', measurements[0]);
     }
-  });
+
+    formStore.change();
+  })
+  .catch(handleError);
 }
 
 function loadTags(measurement) {
@@ -42,7 +49,8 @@ function loadTags(measurement) {
     tagsCache[measurement] = tags;
     tagsStore.set('tags', tags);
     return tags;
-  });
+  })
+  .catch(handleError);
 }
 
 function sendQuery(measurement, query) {
@@ -57,7 +65,8 @@ function sendQuery(measurement, query) {
     tagsStore.set('tags', tags);
     resultsStore.set('results', _results);
     return _results;
-  });
+  })
+  .catch(handleError);
 }
 
 function query() {
