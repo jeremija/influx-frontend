@@ -12,14 +12,18 @@ table {
 }
 
 table th {
+  color: white;
   overflow: auto;
   resize: horizontal;
   text-align: left;
-  text-decoration: underline;
 }
 
 table th, table td {
   padding-right: 1rem;
+}
+
+table td {
+  padding: 0.5rem 0;
 }
 
 table tbody tr:nth-child(odd) {

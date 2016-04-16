@@ -7,11 +7,14 @@ const request = require('supertest-as-promised');
 describe('app', () => {
 
   before(() => {
-    return influx.writePointAsync(
-      'test',
-      { a: 1, b: 2 },
-      { t1: 'tag1', t2: 'tag2' }
-    )
+    return influx.queryAsync('create database logs')
+    .then(() => {
+      return influx.writePointAsync(
+        'test',
+        { a: 1, b: 2 },
+        { t1: 'tag1', t2: 'tag2' }
+      );
+    })
     .then(() => {
       return influx.writePointAsync(
         'test',

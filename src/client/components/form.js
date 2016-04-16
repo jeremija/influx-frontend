@@ -38,7 +38,10 @@ function Form() {
         type="number"
         value={formStore.get('offset')}
       />
-      <select onChange={e => formStore.set('unit', e.target.value)}>
+      <select
+        onChange={e => formStore.set('unit', e.target.value)}
+        value={formStore.get('unit')}
+      >
         {unitOpts}
       </select>
 

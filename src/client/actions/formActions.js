@@ -6,6 +6,7 @@ const http = require('../http.js');
 const formStore = require('../stores/formStore.js');
 const moment = require('moment');
 const resultsStore = require('../stores/resultsStore.js');
+const querystring = require('../querystring.js');
 const tagsStore = require('../stores/tagsStore.js');
 
 let tagsCache = {};
@@ -26,7 +27,11 @@ function loadMeasurements() {
   return http.get('influx/measurements')
   .then(measurements => {
     formStore.set('measurements', measurements);
-    formStore.set('measurement', measurements[0]);
+
+    // replace selected measuremenet only if not set
+    if (measurements.indexOf(formStore.get('measurement')) < 0) {
+      formStore.set('measurement', measurements[0]);
+    }
   });
 }
 
@@ -41,7 +46,7 @@ function loadTags(measurement) {
 }
 
 function sendQuery(measurement, query) {
-  debug('query:', query);
+  debug('query: %s', query);
   query = encodeURIComponent(query);
 
   let _results;
@@ -56,13 +61,15 @@ function sendQuery(measurement, query) {
 }
 
 function query() {
-  let date = moment(formStore.get('datetime'));
-  let startDate = moment(date).utc().format(DATE_FORMAT);
+  let datetime = formStore.get('datetime');
+  let startDate = moment(datetime).utc().format(DATE_FORMAT);
   let offset = formStore.get('offset');
   let unit = formStore.get('unit');
-  let endDate = moment(date).add(offset, unit).utc().format(DATE_FORMAT);
+  let endDate = moment(datetime).add(offset, unit).utc().format(DATE_FORMAT);
   let m = formStore.get('measurement');
   let condition = formStore.get('condition');
+
+  querystring.setQuery({ datetime, offset, unit, measurement: m, condition });
 
   let query = 'select * from "' + m + '" where time >= \'' + startDate + '\'' +
     ' and time < \'' + endDate + '\'';
