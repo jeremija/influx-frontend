@@ -34,6 +34,10 @@ function createStore() {
     return vars;
   }
 
+  function setState(_vars) {
+    vars = _vars || {};
+  }
+
   function addListener(callback) {
     emitter.on('change', callback);
     return self;
@@ -52,7 +56,15 @@ function createStore() {
   }
 
   let self = {
-    set, get, getState, softSet, change, when, addListener, removeListener
+    addListener,
+    change,
+    get,
+    getState,
+    removeListener,
+    set,
+    setState,
+    softSet,
+    when
   };
   return self;
 }

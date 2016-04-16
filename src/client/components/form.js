@@ -23,7 +23,7 @@ const Form = React.createClass({
     this.setState(formStore.getState());
   },
   render() {
-    let measurements = this.state.measurements || [];
+    let measurements = formStore.get('measurements') || [];
     let measurementOpts = measurements.map((measurement, i) => {
       return <option key={i}>{measurement}</option>;
     });

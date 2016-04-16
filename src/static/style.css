@@ -94,3 +94,13 @@ table td:hover .clickable {
   cursor: pointer;
 }
 
+.status {
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.status.error {
+  color: #faa;
+}

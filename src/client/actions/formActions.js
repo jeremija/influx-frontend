@@ -7,12 +7,20 @@ const formStore = require('../stores/formStore.js');
 const moment = require('moment');
 const resultsStore = require('../stores/resultsStore.js');
 const querystring = require('../querystring.js');
+const statusStore = require('../stores/statusStore.js');
 const tagsStore = require('../stores/tagsStore.js');
 
 let tagsCache = {};
 
 function handleError(error) {
-  resultsStore.set('error', error && error.message || 'An error has occurred');
+  statusStore.set('status', {
+    type: 'error',
+    message: error && error.message || 'An error has occurred'
+  });
+}
+
+function removeStatus() {
+  statusStore.set('status', undefined);
 }
 
 function setDate(date) {
@@ -66,6 +74,7 @@ function sendQuery(measurement, query) {
     resultsStore.set('results', _results);
     return _results;
   })
+  .then(removeStatus)
   .catch(handleError);
 }
 
@@ -86,6 +95,7 @@ function query() {
     query += ' ' + condition;
   }
 
+  statusStore.set('status', { type: 'info', message: 'Loading...' });
   return sendQuery(m, query);
 }
 
