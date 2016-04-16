@@ -1,0 +1,13 @@
+sudo: required
+language: node_js
+services:
+  - docker
+before_install:
+  - docker pull tutum/influxdb:0.12
+  - docker run -d -p 8083:8083 -p 8086:8086 tutum/influxdb:0.12
+  - docker ps -a
+node_js:
+  - "5.2.0"
+script: npm test
+notifications:
+  email: false
