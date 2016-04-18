@@ -8,10 +8,7 @@
     "password": "test",
     "database": "logs"
   },
-  "ssl": {
-    "key": null,
-    "crt": null
-  }
+  "secret": "01c1334a-793e-4d9a-bccc-734af1f4b26d",
   "users": {
     "admin": {
       "password": "4dm1n"

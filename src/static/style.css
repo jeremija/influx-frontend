@@ -21,6 +21,11 @@ input, select {
   margin-right: -0.25rem;
 }
 
+form.login {
+  padding-top: 6rem;
+  text-align: center;
+}
+
 @media(min-width: 600px) {
 
   .query {
