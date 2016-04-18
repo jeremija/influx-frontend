@@ -68,13 +68,15 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  // failureRedirect: '/'
-}));
+  failureRedirect: 'login'
+}), (req, res) => {
+  let redirect = req.session.redirectTo || 'app';
+  res.redirect(redirect);
+});
 
 app.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/login');
+  res.redirect('login');
 });
 
 browserify.settings({
@@ -88,18 +90,22 @@ function handleError(err, res) {
 
 function ensureLoggedIn(req, res, next) {
   if (req.user) return next();
-  return res.redirect('/login');
+  req.session.redirectTo = req.originalUrl;
+  return res.redirect('login');
 }
 
-app.use(ensureLoggedIn);
+app.use('/api', (req, res, next) => {
+  if (req.user) return next();
+  res.status(401).json({ error: 'Unauthorized' });
+});
 
-app.get('/influx/query', (req, res) => {
+app.get('/api/influx/query', (req, res) => {
   influx.queryAsync(req.param.database, req.query.q)
   .then(results => res.json(results))
   .catch(err => handleError(err, res));
 });
 
-app.get('/influx/measurements', (req, res) => {
+app.get('/api/influx/measurements', (req, res) => {
   influx.getMeasurementsAsync()
   .then(measurements => {
     measurements = _.flatten(measurements[0].series[0].values);
@@ -108,7 +114,7 @@ app.get('/influx/measurements', (req, res) => {
   .catch(err => handleError(err, res));
 });
 
-app.get('/influx/:measurement/tags', (req, res) => {
+app.get('/api/influx/:measurement/tags', (req, res) => {
   let m = req.params.measurement;
   let tags = {};
   influx.queryAsync('show tag keys from "' + m + '"')
@@ -123,11 +129,17 @@ app.get('/influx/:measurement/tags', (req, res) => {
   .catch(err => handleError(err, res));
 });
 
+app.use(ensureLoggedIn);
+
 app.use(
   '/js/index.js', browserify(path.join(__dirname, '../client/index.js'))
 );
 
 app.get('/', (req, res) => {
+  res.redirect('app');
+});
+
+app.get('/app', (req, res) => {
   res.render('index');
 });
 

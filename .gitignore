@@ -42,3 +42,5 @@ jspm_packages
 *.pidb
 *.resources
 test-results/
+
+config/local*

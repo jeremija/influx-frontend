@@ -34,8 +34,8 @@ describe('app', () => {
   function getSessionCookie() {
     return login('admin', '4dm1n')
     .expect(302)
+    .expect('location', 'app')
     .then(res => {
-      expect(res.headers['location']).to.equal('/');
       let cookie = res.headers['set-cookie'];
       return cookie;
     });
@@ -47,30 +47,32 @@ describe('app', () => {
       .then(cookie => {
         expect(cookie).to.be.ok;
         return request(app)
-        .get('/')
+        .get('/app')
         .set('cookie', cookie)
         .expect(200);
       });
     });
 
-    it('should return 401 when invalid username', () => {
+    it('should return 302 when invalid username', () => {
       return login('wrong user', 'wrong password')
-      .expect(401);
+      .expect('location', 'login')
+      .expect(302);
     });
 
-    it('should return 401 when invalid password ', () => {
+    it('should return 302 when invalid password ', () => {
       return login('admin', 'wrong password')
-      .expect(401);
+      .expect('location', 'login')
+      .expect(302);
     });
 
   });
 
-  describe('GET /influx/query', () => {
+  describe('GET /api/influx/query', () => {
 
     it('should not be available when not authenticated', () => {
        return request(app)
-       .get('/influx/measurements')
-       .expect(302);
+       .get('/api/influx/measurements')
+       .expect(401);
     });
 
     it('should return json from influx', () => {
@@ -78,7 +80,7 @@ describe('app', () => {
       return getSessionCookie()
       .then(cookie => {
         return request(app)
-        .get('/influx/query?q=show+measurements')
+        .get('/api/influx/query?q=show+measurements')
         .set('cookie', cookie)
         .expect(200)
         .then(res => {
@@ -93,19 +95,19 @@ describe('app', () => {
 
   });
 
-  describe('GET /influx/measurements', () => {
+  describe('GET /api/influx/measurements', () => {
 
     it('should not be available when not authenticated', () => {
        return request(app)
-       .get('/influx/measurements')
-       .expect(302);
+       .get('/api/influx/measurements')
+       .expect(401);
     });
 
     it('should return json from influx', () => {
       return getSessionCookie()
       .then(cookie => {
          return request(app)
-         .get('/influx/measurements')
+         .get('/api/influx/measurements')
          .set('cookie', cookie)
          .expect(200)
          .then(res => {
@@ -117,19 +119,19 @@ describe('app', () => {
 
   });
 
-  describe('GET /influx/:measurement/tags', () => {
+  describe('GET /api/influx/:measurement/tags', () => {
 
     it('should not be available when not authenticated', () => {
        return request(app)
-       .get('/influx/measurements')
-       .expect(302);
+       .get('/api/influx/measurements')
+       .expect(401);
     });
 
     it('should merge tags\' keys and values', () => {
       return getSessionCookie()
       .then(cookie => {
          return request(app)
-         .get('/influx/test/tags')
+         .get('/api/influx/test/tags')
          .set('cookie', cookie)
          .expect(200)
          .then(res => {

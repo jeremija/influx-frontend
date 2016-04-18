@@ -36,7 +36,7 @@ function addCondition(key, comparator, value) {
 }
 
 function loadMeasurements() {
-  return http.get('influx/measurements')
+  return http.get('api/influx/measurements')
   .then(measurements => {
     formStore.softSet('measurements', measurements);
 
@@ -52,7 +52,7 @@ function loadMeasurements() {
 
 function loadTags(measurement) {
   if (tagsCache[measurement]) return Bluebird.resolve(tagsCache[measurement]);
-  return http.get('influx/' + measurement + '/tags')
+  return http.get('api/influx/' + measurement + '/tags')
   .then(tags => {
     tagsCache[measurement] = tags;
     tagsStore.set('tags', tags);
@@ -66,7 +66,7 @@ function sendQuery(measurement, query) {
   query = encodeURIComponent(query);
 
   let _results;
-  return http.get('influx/query?q=' + query)
+  return http.get('api/influx/query?q=' + query)
   .then(results => (_results = results))
   .then(() => loadTags(measurement))
   .then(tags => {

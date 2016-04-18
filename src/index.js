@@ -10,6 +10,7 @@ const http = require('http');
 const https = require('https');
 
 const port = process.env.PORT || 3000;
+const ip = process.env.IP || '';
 
 let server;
 if (config.has('ssl.key') && config.has('ssl.crt')) {
@@ -21,6 +22,6 @@ if (config.has('ssl.key') && config.has('ssl.crt')) {
   server = http.createServer(app);
 }
 
-server.listen(port, () => {
-  debug('Listening on port %s', port);
+server.listen(port, ip, () => {
+  debug('Listening on %s:%s', ip, port);
 });
