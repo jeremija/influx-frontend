@@ -13,12 +13,44 @@ input, select {
   padding: 0.5rem;
   font-family: 'Ubuntu Mono', monospace;
   border-radius: 5px;
-  margin: 0 0.25rem 0 0.25rem;
+  margin: 0 0.25rem 0.25rem 0.25rem;
 }
 
 .query {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
+}
+
+.form-display-switcher button {
+  box-sizing: border-box;
+  background-color: #111;
+  color: white;
+  cursor: pointer;
+  border: 1px solid #333;
+  border-left: none;
+  font-family: 'Ubuntu Mono', monospace;
+  padding: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.form-display-switcher button:focus {
+  outline: none;
+}
+
+.form-display-switcher button.active {
+  background-color: #333;
+  cursor: inherit;
+}
+
+.form-display-switcher button:first-child {
+  border-left: 1px solid #333;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.form-display-switcher button:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 form.login {

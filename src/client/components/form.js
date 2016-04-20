@@ -1,17 +1,41 @@
 const React = require('react');
 const formStore = require('../stores/formStore.js');
-const actions = require('../actions/formActions.js');
 
-var units = ['minute', 'hour', 'day'];
+const SimpleForm = require('./simpleForm.js');
+const RawForm = require('./rawForm.js');
 
-function handleSubmit(e) {
-  e.preventDefault();
-  actions.query();
+let stateStyles = {
+  raw: {
+    raw: { display: 'inherit' },
+    simple: { display: 'none' }
+  },
+  simple: {
+    raw: { display: 'none', },
+    simple: { display: 'inherit' }
+  }
+};
+
+function getButtonState(state, targetState) {
+  return state === targetState ? 'active' : '';
+}
+
+function getState() {
+  return {
+    display: formStore.get('display')
+  };
+}
+
+function showSimpleForm() {
+  formStore.set('display', 'simple');
+}
+
+function showRawForm() {
+  formStore.set('display', 'raw');
 }
 
 const Form = React.createClass({
   getInitialState() {
-    return formStore.getState();
+    return getState();
   },
   componentDidMount() {
     formStore.addListener(this.onChange);
@@ -20,54 +44,37 @@ const Form = React.createClass({
     formStore.removeListener(this.onChange);
   },
   onChange() {
-    this.setState(formStore.getState());
+    this.setState(getState());
   },
   render() {
-    let measurements = formStore.get('measurements') || [];
-    let measurementOpts = measurements.map((measurement, i) => {
-      return <option key={i}>{measurement}</option>;
-    });
-
-    let unitOpts = units.map((unit, i) => {
-      return <option key={i}>{unit}</option>;
-    });
+    let state = this.state.display || 'simple';
+    let styles = stateStyles[state];
 
     return (
-      <form className="query" onSubmit={handleSubmit}>
-        <select onChange={e => formStore.set('measurement', e.target.value)}>
-          {measurementOpts}
-        </select>
-        <input
-          onChange={e => formStore.set('datetime', e.target.value)}
-          required
-          type="datetime"
-          value={formStore.get('datetime')}
-        />
-        <input
-          max="8"
-          min="1"
-          onChange={e => formStore.set('offset', e.target.value)}
-          required
-          type="number"
-          value={formStore.get('offset')}
-        />
-        <select
-          onChange={e => formStore.set('unit', e.target.value)}
-          value={formStore.get('unit')}
-        >
-          {unitOpts}
-        </select>
-
-        <div className="right">
-          <input
-            className="condition"
-            onChange={e => formStore.set('condition', e.target.value)}
-            type="text"
-            value={formStore.get('condition')}
-          />
-          <input type="submit" value="Go" />
+      <div className="form">
+        <div className="form-display-switcher">
+          <button
+            className={getButtonState(state, 'simple')}
+            onClick={showSimpleForm}
+          >
+            Simple
+          </button>
+          <button
+            className={getButtonState(state, 'raw')}
+            onClick={showRawForm}
+          >
+            Raw
+          </button>
         </div>
-      </form>
+
+        <div style={styles.simple}>
+          <SimpleForm />
+        </div>
+
+        <div style={styles.raw} >
+          <RawForm />
+        </div>
+      </div>
     );
   }
 });

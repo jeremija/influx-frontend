@@ -1,10 +1,8 @@
 'use strict';
 const Bluebird = require('bluebird');
-const DATE_FORMAT = require('../constants/date.js').DATE_FORMAT;
 const debug = require('debug')('influx-query');
 const http = require('../http.js');
 const formStore = require('../stores/formStore.js');
-const moment = require('moment');
 const resultsStore = require('../stores/resultsStore.js');
 const querystring = require('../querystring.js');
 const statusStore = require('../stores/statusStore.js');
@@ -61,8 +59,13 @@ function loadTags(measurement) {
   .catch(handleError);
 }
 
-function sendQuery(measurement, query) {
+function getMeasurement(query) {
+  return query && query.match(/from *?"(.*?)"/i)[1];
+}
+
+function sendQuery(query) {
   debug('query: %s', query);
+  let measurement = getMeasurement(query);
   query = encodeURIComponent(query);
 
   let _results;
@@ -78,25 +81,15 @@ function sendQuery(measurement, query) {
   .catch(handleError);
 }
 
-function query() {
-  let datetime = formStore.get('datetime');
-  let startDate = moment(datetime).utc().format(DATE_FORMAT);
-  let offset = formStore.get('offset');
-  let unit = formStore.get('unit');
-  let endDate = moment(datetime).add(offset, unit).utc().format(DATE_FORMAT);
-  let m = formStore.get('measurement');
-  let condition = formStore.get('condition');
-
-  querystring.setQuery({ datetime, offset, unit, measurement: m, condition });
-
-  let query = 'select * from "' + m + '" where time >= \'' + startDate + '\'' +
-    ' and time < \'' + endDate + '\'';
-  if (condition) {
-    query += ' ' + condition;
-  }
+function query(query) {
+  querystring.setQuery({
+    display: 'raw',
+    query
+  });
+  formStore.set('query', query);
 
   statusStore.set('status', { type: 'info', message: 'Loading...' });
-  return sendQuery(m, query);
+  return sendQuery(query);
 }
 
 module.exports = { addCondition, loadMeasurements, query, setDate };
