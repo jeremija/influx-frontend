@@ -5,32 +5,22 @@ const http = require('../http.js');
 const formStore = require('../stores/formStore.js');
 const resultsStore = require('../stores/resultsStore.js');
 const querystring = require('../querystring.js');
-const statusStore = require('../stores/statusStore.js');
 const tagsStore = require('../stores/tagsStore.js');
 
 let tagsCache = {};
 
-function handleError(error) {
-  statusStore.set('status', {
-    type: 'error',
-    message: error && error.message || 'An error has occurred'
-  });
-}
-
-function removeStatus() {
-  statusStore.set('status', undefined);
-}
+function noop() {}
 
 function setDate(date) {
   formStore.set('datetime', date);
 }
 
 function addCondition(key, comparator, value) {
-  let condition = formStore.get('condition') || '';
-  condition += ' and ';
-  condition += key + ' ' + comparator + ' \'' + value + '\'';
-  debug('setting condition to: %s', condition);
-  formStore.set('condition', condition);
+  let condition = ' and ' + key + ' ' + comparator + ' \'' + value + '\'';
+  debug('adding condition: %s', condition);
+
+  formStore
+  .set('condition', formStore.get('condition') + condition);
 }
 
 function loadMeasurements() {
@@ -45,7 +35,7 @@ function loadMeasurements() {
 
     formStore.change();
   })
-  .catch(handleError);
+  .catch(noop);
 }
 
 function loadTags(measurement) {
@@ -56,11 +46,12 @@ function loadTags(measurement) {
     tagsStore.set('tags', tags);
     return tags;
   })
-  .catch(handleError);
+  .catch(noop);
 }
 
 function getMeasurement(query) {
-  return query && query.match(/from *?"(.*?)"/i)[1];
+  let match = query && query.match(/from *?"(.*?)"/i);
+  return match && match[1];
 }
 
 function sendQuery(query) {
@@ -71,14 +62,16 @@ function sendQuery(query) {
   let _results;
   return http.get('api/influx/query?q=' + query)
   .then(results => (_results = results))
-  .then(() => loadTags(measurement))
+  .then(() => {
+    if (!measurement) return {};
+    return loadTags(measurement);
+  })
   .then(tags => {
     tagsStore.set('tags', tags);
     resultsStore.set('results', _results);
     return _results;
   })
-  .then(removeStatus)
-  .catch(handleError);
+  .catch(noop);
 }
 
 function query(query) {
@@ -88,7 +81,6 @@ function query(query) {
   });
   formStore.set('query', query);
 
-  statusStore.set('status', { type: 'info', message: 'Loading...' });
   return sendQuery(query);
 }
 

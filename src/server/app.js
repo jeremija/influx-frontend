@@ -85,7 +85,7 @@ browserify.settings({
 
 function handleError(err, res) {
   debug('error: %s', err.stack);
-  res.status(500).json({ error: err.message });
+  res.status(400).json({ message: err.message });
 }
 
 function ensureLoggedIn(req, res, next) {

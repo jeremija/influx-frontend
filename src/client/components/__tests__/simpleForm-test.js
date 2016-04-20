@@ -41,11 +41,11 @@ describe('form', () => {
 
   it('should change store values typing', () => {
     formStore.set('measurements', ['app-logs']);
+    formStore.set('condition', 'and 1 = 1');
     let form = render(<SimpleForm />);
     setValue(form.querySelector('input[name=datetime]'), '2016-01-02');
     setValue(form.querySelector('select[name=unit]'), 'hour');
     setValue(form.querySelector('select[name=measurement]'), 'app-logs');
-    setValue(form.querySelector('input[name=condition]'), 'and 1 = 1');
 
     let event = { preventDefault: jest.genMockFunction() };
     TestUtils.Simulate.submit(form.querySelector('form'), event);

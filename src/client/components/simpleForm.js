@@ -4,6 +4,7 @@ const React = require('react');
 const actions = require('../actions/formActions.js');
 const formStore = require('../stores/formStore.js');
 const moment = require('moment');
+const _ = require('underscore');
 
 var units = ['minute', 'hour', 'day'];
 
@@ -19,14 +20,12 @@ function getMeasurements(measurement) {
 const Form = React.createClass({
   getInitialState() {
     let measurements = getMeasurements();
-    return {
-      condition: '',
-      measurements: measurements.measurements,
-      measurement: measurements.measurement,
+    return _.extend(measurements, {
+      condition: '' + formStore.get('condition'),
       unit: 'hour',
       datetime: moment(Date.now() - 1 * 3600000).format(DATE_FORMAT),
       offset: 1,
-    };
+    });
   },
   componentDidMount() {
     formStore.addListener(this.onChange);
@@ -47,10 +46,14 @@ const Form = React.createClass({
     this.setState({ unit: e.target.value });
   },
   setCondition: function(e) {
-    this.setState({ condition: e.target.value });
+    formStore.set('condition', e.target.value);
   },
   onChange() {
-    this.setState(getMeasurements(this.state.measurement));
+    let measurements = getMeasurements(this.state.measurement);
+    this.setState(_.extend(measurements, {
+      condition: '' + formStore.get('condition')
+    }));
+
   },
   handleSubmit: function(e) {
     e.preventDefault();
